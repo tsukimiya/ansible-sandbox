@@ -1,0 +1,17 @@
+---
+  - name: install common packages
+    action: apt name=$item update-cache=yes state=installed
+    with_items:
+      - zsh
+      - vim
+      - git
+      - tmux
+  - name: Determining username
+    action: shell whoami
+    register: whoami
+    sudo: False
+  - name: Changing the default shell to zsh
+    action: user shell=/bin/zsh user=$item
+    with_items:
+      - root
+      - ${whoami.stdout}

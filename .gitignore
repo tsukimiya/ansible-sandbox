@@ -1,0 +1,4 @@
+config.yml
+ansible-playbook.iml
+.idea/
+test.yml

@@ -1,0 +1,27 @@
+---      
+   - name: install php-fpm 
+     action: apt name=php5-fpm state=installed    
+
+   - name: php install needed modules
+     action: apt name=$item state=installed    
+     with_items: 
+        - php5-common
+        - php5-curl
+        - php5-gd
+        - php5-cli
+        - php5-pgsql
+        - php5-mysqlnd
+        - php5-mcrypt
+        - php5-sqlite
+        - php5-apcu
+
+   - name: service run php5-fpm 
+     action: service name=php5-fpm state=started 
+
+   - name: php-fpm config
+     action: template src='php-fpm/templates/php-fpm.ini' dest='/etc/php5/fpm/php.ini'
+
+   - name: fpm config
+     action: template src='php-fpm/templates/www.conf' dest='/etc/php5/fpm/pool.d/www.conf'
+     notify: 
+       - restart php5-fpm

@@ -1,0 +1,64 @@
+- hosts: "{{ host }}"
+  user: "{{ user }}"
+  sudo: yes
+  vars_prompt:
+    - name: "host"
+      prompt: "Please enter hosts"
+      private: no
+      default: "localhost"
+    - name: "user"
+      prompt: "Please enter user name"
+      private: no
+      default: "vagrant"
+  vars_files:
+    - config.yml
+  vars:
+    connections: "1024"
+    is_10_up: "'$ansible_distribution_version' >= '10.04'"
+    is_ubuntu: "'$ansible_distribution' == 'Ubuntu'"
+    # nginx
+    connections: "800"
+    delete_default_vhost: true
+    nginx_user: www-data
+
+    # mysql
+    bind_address: "127.0.0.1"
+    key_buffer: "16M"
+    # php5-fpm
+    max_children: 5
+    start_servers: 2
+    min_spare_servers: 2
+    max_spare_servers: 4
+
+  tasks:
+    - name: ensure ondrej/php5 repository is registered
+      action: apt_repository repo=ppa:ondrej/php5
+
+    - name: ensure nginx repository is registered
+      action: apt_repository repo=ppa:nginx/stable
+
+    - name: ensure apt cache is updated
+      action: apt update_cache=yes
+
+    - name: update all packages to the latest version
+      action: apt upgrade=dist
+
+    - name: install utf-8 locale
+      action: apt name='language-pack-ja' state=installed
+
+    - name: setting LANG
+      shell: export LANG=ja_JP.UTF-8
+
+    - name: update-locale
+      command: update-locale LC_ALL=ja_JP.UTF-8
+
+    - include: common/tasks/setup.yml
+    - include: mariadb/tasks/setup.yml
+    - include: postgresql/tasks/setup.yml
+    - include: nginx/tasks/setup.yml
+    - include: php-fpm/tasks/setup.yml
+  handlers:
+    - include: mariadb/handlers/handler.yml
+    - include: postgresql/handlers/handler.yml
+    - include: nginx/handlers/handler.yml
+    - include: php-fpm/handlers/handler.yml
