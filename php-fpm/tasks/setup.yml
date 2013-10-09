@@ -6,6 +6,7 @@
      action: apt name=$item state=installed    
      with_items: 
         - php5-common
+        - php5-dev
         - php5-curl
         - php5-gd
         - php5-cli
@@ -25,3 +26,20 @@
      action: template src='php-fpm/templates/www.conf' dest='/etc/php5/fpm/pool.d/www.conf'
      notify: 
        - restart php5-fpm
+
+   - name: phalcon-php github checkout
+     git: repo=https://github.com/phalcon/cphalcon.git dest=/tmp/cphalcon
+
+   - name: phalcon make install
+     shell: cd /tmp/cphalcon/build && ./install
+
+   - name: copy phalcon configuration file
+     template: src='php-fpm/templates/phalcon.ini' dest='/etc/php5/mods-available'
+
+   - name: enable php-fpm - phalcon
+     file: src=/etc/php5/mods-available/phalcon.ini dest=/etc/php5/fpm/conf.d/20-phalcon.ini state=link
+     notify:
+       - restart php5-fpm
+
+   - name: enable cli - phalcon
+     file: src=/etc/php5/mods-available/phalcon.ini dest=/etc/php5/cli/conf.d/20-phalcon.ini state=link
