@@ -31,6 +31,9 @@
     max_spare_servers: 4
 
   tasks:
+    - name: install python-pycurl
+      apt: name='python-pycurl' update_cache=yes
+
     - name: ensure ondrej/php5 repository is registered
       action: apt_repository repo=ppa:ondrej/php5
 
