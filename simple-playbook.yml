@@ -58,11 +58,11 @@
     - include: common/tasks/setup.yml
     - include: mariadb/tasks/setup.yml
     - include: postgresql/tasks/setup.yml
-    - include: nginx/tasks/setup.yml
-    - include: php-fpm/tasks/setup.yml
+#    - include: nginx/tasks/setup.yml
+#    - include: php-fpm/tasks/setup.yml
   handlers:
     - include: common/handlers/main.yml
     - include: mariadb/handlers/handler.yml
     - include: postgresql/handlers/handler.yml
-    - include: nginx/handlers/handler.yml
-    - include: php-fpm/handlers/handler.yml
+#    - include: nginx/handlers/handler.yml
+#    - include: php-fpm/handlers/handler.yml
