@@ -6,6 +6,7 @@
       - vim
       - git
       - tmux
+      - sysv-rc-conf
   - name: ntp is installed
     apt: name=ntp state=installed
     tags: ntp
