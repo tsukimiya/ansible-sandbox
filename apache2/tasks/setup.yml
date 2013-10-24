@@ -1,12 +1,24 @@
 ---
   - name: install apache
-    action: apt pkg=apache2 state=installed update-cache=yes
+    action: apt name=$item state=installed
+    with_items:
+      - apache2
+      - libaprutil1-dev
+      - apache2-dev
+      - libapache2-mod-php5
+      - cronolog
 
-  - name: install libapache2-mod-php5
-    action: apt pkg=libapache2-mod-php5 state=installed update-cache=yes
+  - name: mod_log_rotate github checkout
+    git: repo=https://github.com/n0ts/mod_log_rotate.git dest=/tmp/mod_log_rotate
+
+  - name: mod_log_rotate make install
+    shell: cd /tmp/mod_log_rotate && apxs -i -a -c mod_log_rotate.c
+
+  - name: mod_log_rotate config
+    action: template src='apache2/templates/log_rotate.conf' dest='/etc/apache2/mods-available/log_rotate.conf'
 
   - name: Apache Enable some modules
-    action: command a2enmod rewrite vhost_alias userdir
+    action: command a2enmod rewrite vhost_alias userdir log_rotate
 
   - name: Apache Disable the default site
     action: command a2dissite 000-default
