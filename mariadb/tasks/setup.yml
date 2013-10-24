@@ -18,8 +18,6 @@
     # to be available. Caused an error with phpMyAdmin.
     - name: start maridadb
       service: name=mysql state=started
-      notify:
-        - restart php5-fpm
 
     - name: set root db password
       mysql_user: name=root
