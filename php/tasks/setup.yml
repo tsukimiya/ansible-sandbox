@@ -1,0 +1,33 @@
+---
+   - name: php install needed modules
+     action: apt name=$item state=installed
+     with_items:
+        - php5
+        - php5-common
+        - php5-curl
+        - php5-gd
+        - php5-cli
+        - php5-pgsql
+        - php5-mysqlnd
+        - php5-mcrypt
+        - php5-sqlite
+        - php5-apcu
+        - php5-dev
+
+   - name: php config
+     action: template src='php/templates/php-apache2.ini' dest='/etc/php5/apache2/php.ini'
+
+   - name: phalcon-php github checkout
+     git: repo=https://github.com/phalcon/cphalcon.git dest=/tmp/cphalcon
+
+   - name: phalcon make install
+     shell: cd /tmp/cphalcon/build && ./install
+
+   - name: copy phalcon configuration file
+     template: src='php/templates/phalcon.ini' dest='/etc/php5/mods-available'
+
+   - name: enable php - phalcon
+     file: src=/etc/php5/mods-available/phalcon.ini dest=/etc/php5/apache2/conf.d/20-phalcon.ini state=link
+
+   - name: enable cli - phalcon
+     file: src=/etc/php5/mods-available/phalcon.ini dest=/etc/php5/cli/conf.d/20-phalcon.ini state=link

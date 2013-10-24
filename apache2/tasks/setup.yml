@@ -1,0 +1,14 @@
+---
+  - name: install apache
+    action: apt pkg=apache2 state=installed update-cache=yes
+
+  - name: install libapache2-mod-php5
+    action: apt pkg=libapache2-mod-php5 state=installed update-cache=yes
+
+  - name: Apache Enable some modules
+    action: command a2enmod rewrite vhost_alias userdir
+
+  - name: Apache Disable the default site
+    action: command a2dissite 000-default
+    notify:
+      - restart apache
